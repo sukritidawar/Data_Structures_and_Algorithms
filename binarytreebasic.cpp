@@ -92,6 +92,35 @@ void preorderIterative(Node* root){ //O(n) time, O(h) aux.space
     }
 }
 
+vector<int> postorderIterative(Node* root) {
+    vector<int> ans;
+    stack<Node*> st;
+    Node* curr = root;
+    while(curr != NULL || st.empty() == false){
+        if(curr != NULL){
+            st.push(curr);
+            curr = curr -> left; //Going to left child
+        }
+        else{
+            Node* temp = st.top() -> right;
+            if(temp == NULL){   //if right child is null
+                temp = st.top();
+                st.pop();
+                ans.push_back(temp -> key);
+                while(!st.empty() && temp == st.top() -> right){ //checking if temp is the right child of thr parent
+                    temp = st.top();                             //if it is then we add the parent's key in vecor ans and pop the parent from the stack
+                    st.pop();
+                    ans.push_back(temp -> key);
+                }
+            }
+            else{
+                curr = temp;
+            }
+        }
+    }
+    return ans;
+}
+
 int main(){
     Node *root = new Node(10);
     root -> left = new Node(20);
