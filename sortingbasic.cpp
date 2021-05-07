@@ -101,7 +101,7 @@ int* merge(int arr[], int l, int m, int h){ //time complexity: O(n), aux space: 
     return arr;
 }
 
-int* mergeSort(int arr[], int l, int r){    //To check that there are atleast two elements in arr
+int* mergeSort(int arr[], int l, int r){ //To check that there are atleast two elements in arr
     int *p;
     if(r > l){
         int m = l + (r - l)/2; //same as (r+l)/2, but to prevent overflow, we used this 
@@ -180,21 +180,6 @@ int* quicksort_hoare(int arr[], int l, int h){
     return arr;
 }
 
-void maxHeapify(int arr[], int n, int i){
-    int largest = i, left = 2*i+1, right = 2*i+2;
-    if(left < n && arr[largest] < arr[left]) largest = left;
-    if(right < n && arr[largest] < arr[right]) largest = right;
-    if(largest != i){
-        swap(arr[largest], arr[i]);
-        maxHeapify(arr, n, largest);
-    }
-}
-
-void buildHeap(int arr[], int n){   //O(n)
-    for(int i = (n - 2)/2; i >= 0; i--){
-        maxHeapify(arr, n, i);
-    }
-}
 
 int main(){
     int arr[] = {2, 10, 8, 7};

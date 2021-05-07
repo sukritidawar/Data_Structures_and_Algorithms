@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <unordered_map>
 using namespace std;
 
 int fact(int n){
@@ -103,24 +104,6 @@ bool areSame(int c_txt[], int c_pat[]){
     return true;
 }
 
-bool searchAnagrams(string txt, string pat){
-    int c_txt[256] = {0};
-    int c_pat[256] = {0};
-    int n = txt.size(), m = pat.size();
-    for(int i = 0; i < m; i++){
-        c_txt[txt[i]]++;
-        c_pat[pat[i]]++;
-    }
-    for(int i = m; i < n; i++){
-        if(areSame(c_txt, c_pat)){
-            return true;
-        }
-        c_txt[txt[i]]++;
-        c_txt[txt[i - m]]--;
-    }
-    return false;
-}
-
 bool checkRotations(string s1, string s2){ //O(n)
     if(s1.size() != s2.size()){
         return false;
@@ -165,7 +148,7 @@ void computelpsarray(string pat, int *lps, int m){
     }
 }
 
-void kmpsearch(string pat, string txt){
+void kmpsearch(string pat, string txt){ //O(2*n) time
     int n = txt.length(), m = pat.length();
     int lps[m];
     computelpsarray(pat, lps, m);
@@ -187,6 +170,55 @@ void kmpsearch(string pat, string txt){
     }
 }
 
+bool areSame(unordered_map<char, int> freq1, unordered_map<char, int> freq2){
+    for(auto x : freq1){
+        if(freq2.find(x.first) == freq2.end()){
+            return false;
+        }
+        else if(freq2[x.first] < x.second){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool anagramSearch(string txt, string pat){
+    unordered_map<char, int> freq1;
+    unordered_map<char, int> freq2;
+    for(int i = 0; i < pat.size(); i++){
+        freq1[txt[i]]++;
+        freq2[pat[i]]++;
+    }
+    for(int i = pat.size(); i < txt.size(); i++){
+        if(areSame(freq1, freq2)){
+            return true;
+        }
+        freq1[txt[i]]++;
+        freq1[txt[i - pat.size()]]--;
+    }
+    return false;
+}
+
+int longestSubstring_distinctCharacters(string s){
+    unordered_map<char, int> m;
+    if(s.size() == 0){
+        return 0;
+    }
+    int start = 0;
+    int len = 0;
+    for(int i = 0; i < s.size(); i++){
+        if(m.find(s[i]) != m.end()){
+            m[s[start]]--;
+            start++;
+        }
+        else{
+            m[s[i]]++;
+            len = max(len, i - start + 1);
+        }
+    }
+    return len;
+}
+
 int main(){
     // cout << checkAnagrams("geeks", "ekges");
     // cout << leftmost_repeating_character("abbcd");
@@ -196,6 +228,8 @@ int main(){
     // cout << searchAnagrams("geeks", "eegkd");
     // cout << checkRotations("abcd", "abaa");
     // patSearch_naive("ABCABCDFABCD", "ABCD");
-    kmpsearch("aaaa", "aaaab");
+    // kmpsearch("aaaa", "aaaab");
+    // cout << anagramSearch("geeksforgeeks", "frog");
+    cout << longestSubstring_distinctCharacters("aaaaa");
     return 0;
 }

@@ -245,6 +245,200 @@ int getSurvivor(int n, int k){ //Josephus problem using list in STL, O(n*k) time
     return *l.begin();
 }
 
+Node* reverseInKgroups(Node* head, int k){
+    Node* curr = head, *prevfirst = head;
+    bool isFirstPass = true;
+    while(curr != NULL){
+        Node* first = curr, *prev = NULL;
+        int count = 0;
+        while(curr != NULL && count < k){
+            Node* next = curr -> next;
+            curr -> next = prev;
+            prev = curr;
+            curr = next;
+            count++;
+        }
+        if(isFirstPass){
+            head = prev;
+            isFirstPass = false;
+        }
+        else{
+            prevfirst -> next = prev;
+        }
+        prevfirst = first;
+    }
+    return head;
+}
+
+bool detectLoop(Node* head){ //Usinf Floyd's cycle detection Algorithm
+    Node *slow_p, *fast_p;
+    slow_p = fast_p = head;
+    if(head == NULL || head -> next == NULL){
+        return false;
+    }
+    while(fast_p != NULL && fast_p -> next != NULL){
+        slow_p = slow_p -> next;
+        fast_p = fast_p -> next -> next;
+        if(fast_p == slow_p){
+            return true;
+        }
+    }
+    return false;
+}
+
+Node* detect_and_removeLoop(Node* head){
+    Node* slow_p, *fast_p;
+    slow_p = fast_p = head;
+    while(fast_p != NULL && fast_p -> next != NULL){
+        slow_p = slow_p -> next;
+        fast_p = fast_p -> next -> next;
+        if(fast_p == slow_p){
+            break;
+        }
+    }
+    if(slow_p != fast_p){
+        return;
+    }
+    slow_p = head;
+    while(slow_p -> next != fast_p -> next){
+        slow_p = slow_p -> next;
+        fast_p = fast_p -> next;
+    }
+    fast_p -> next = NULL;
+    return head;
+}
+
+void deleteNode_givenPointer(Node* del){ // Assuming that the pointer given will never be the last node, O(1) time
+    swap(del -> data, del -> next -> data);
+    Node* curr = del -> next;
+    del -> next = curr -> next;
+    delete curr;
+}
+
+Node* segregate_EvenOdd(Node* head){
+    Node *os = NULL, *es = NULL, *ee = NULL, *oe = NULL;
+    for(Node* curr = head; curr != NULL; curr = curr -> next){
+        int x = curr -> data;
+        if(x % 2 == 0){
+            if(es == NULL){
+                es = curr;
+                ee = es;
+            }
+            else{
+                ee -> next = curr;
+                ee = ee -> next;
+            }
+        }
+        else{
+            if(os == NULL){
+                os = curr;
+                oe = os;
+            }
+            else{
+                oe -> next = curr;
+                oe = oe -> next;
+            }
+        }
+    }
+    if(os == NULL || es == NULL){ //When there is no even element or no odd element
+        return head;
+    }
+    ee -> next = os;
+    oe -> next = NULL;
+    return es;
+}
+
+int intersectionPt_twoLL(Node* head1, Node* head2){
+    Node* curr1 = head1, *curr2 = head2;
+    int c1 = 0, c2 = 0;
+    while(curr1 != NULL){
+        curr1 = curr1 -> next;
+        c1++;
+    }
+    while(curr2 != NULL){
+        curr2 = curr2 -> next;
+        c2++;
+    }
+    curr1 = head1;
+    curr2 = head2;
+    int traverse;
+    traverse = c1 > c2 ? c1 : c2;
+    if(traverse == c1){
+        for(int i = 0; i < abs(c1 - c2); i++){
+            curr1 = curr1 -> next;
+        }
+    }
+    else{
+        for(int i = 0; i < abs(c1 - c2); i++){
+            curr2 = curr2 -> next;
+        }
+    }
+    while(curr1 != NULL && curr2 != NULL){
+        if(curr1 = curr2){
+            return curr1 -> data;
+        }
+        curr1 = curr1 -> next;
+        curr2 = curr2 -> next;
+    }
+    return -1;
+}
+
+Node* pairwiseSwap(Node* head){
+    if(head == NULL || head -> next == NULL){
+        return;
+    }
+    Node* curr = head -> next -> next;
+    Node* prev = head;
+    head = head -> next;
+    head -> next = prev;
+    while(curr != NULL || curr -> next != NULL){
+        prev -> next = curr -> next;
+        prev = curr;
+        Node* Next = curr -> next -> next;
+        curr -> next -> next = curr;
+        curr = Next;
+    }
+    prev -> next = curr;
+    return head;
+}
+
+Node* merge2sortedLL(Node* a, Node* b){ //O(m + n) time, m: length of a, n: length of b, O(1) aux space
+    if(a == NULL){
+        return b;
+    }
+    if(b == NULL){
+        return a;
+    }
+    Node* head = NULL, *tail = NULL;
+    if(a -> data <= b -> data){
+        head = tail = a;
+        a = a -> next;
+    }
+    else{
+        head = tail = b;
+        b = b -> next;
+    }
+    while(a != NULL && b != NULL){
+        if(a -> data <= b -> data){
+            tail -> next = a;
+            tail = a;
+            a = a -> next;
+        }
+        else{
+            tail -> next = b;
+            tail = b;
+            b = b -> next;
+        }
+    }
+    if(a == NULL){
+        tail -> next = b;
+    }
+    else{
+        tail -> next = a;
+    }
+    return head;
+}
+
 int main(int argc, char** argv){
     Node *head = NULL;
     head = insertatbeginning(head, 10);
@@ -261,7 +455,8 @@ int main(int argc, char** argv){
     // head = reverseLL(head);
     // head = reverseLL_recursive1(head);
     // head = reverseLL_recursive2(head, NULL);
-    removeDuplicatesfromLL(head);
+    // removeDuplicatesfromLL(head);
+    reverseInKgroups(head, 2);
     traversingLL(head);
     // MiddleofLL(head);
     // MiddleofLL_efficient(head);
